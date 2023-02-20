@@ -3,7 +3,7 @@ use crate::varint_serde::VarIntDecode;
 use std::error::Error;
 
 mod unsignedint;
-mod signedint;
+mod encode_impl;
 mod varint_serde;
 
 pub fn encode_slice<I: varint_serde::VarIntEncode>(nums: &[I]) -> Vec<u8>
