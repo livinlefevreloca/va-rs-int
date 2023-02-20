@@ -1,9 +1,9 @@
-use crate::unsignedint::UnsignedInt;
-use crate::varint_serde::VarIntDecode;
-use std::error::Error;
+use varint_serde::SerdeError;
 
-mod unsignedint;
-mod encode_impl;
+use crate::impl_serde::Encodable;
+use crate::varint_serde::VarIntDecode;
+
+mod impl_serde;
 mod varint_serde;
 
 pub fn encode_slice<I: varint_serde::VarIntEncode>(nums: &[I]) -> Vec<u8>
@@ -20,9 +20,9 @@ where
     num.encode()
 }
 
-pub fn decode<I>(bytes: &[u8]) -> Result<Vec<I>, Box<dyn Error>>
+pub fn decode<I>(bytes: &[u8]) -> Result<Vec<I>, SerdeError>
 where
-    I: Sized + UnsignedInt<I>,
+    I: Sized + Encodable<I>,
 {
     bytes.decode()
 }
@@ -88,6 +88,61 @@ mod test {
     }
 
     #[test]
+    fn test_encode_decode_i8() {
+        let mut rng = rand::thread_rng();
+        let test: i8 = rng.gen();
+
+        let encoded = encode(test);
+        let decoded = decode::<i8>(&encoded).unwrap();
+
+        assert_eq!(test, decoded[0])
+    }
+
+    #[test]
+    fn test_encode_decode_i16() {
+        let mut rng = rand::thread_rng();
+        let test: i16 = rng.gen();
+
+        let encoded = encode(test);
+        let decoded = decode::<i16>(&encoded).unwrap();
+
+        assert_eq!(test, decoded[0])
+    }
+
+    #[test]
+    fn test_encode_decode_i32() {
+        let mut rng = rand::thread_rng();
+        let test: i32 = rng.gen();
+
+        let encoded = encode(test);
+        let decoded = decode::<i32>(&encoded).unwrap();
+
+        assert_eq!(test, decoded[0])
+    }
+
+    #[test]
+    fn test_encode_decode_i64() {
+        let mut rng = rand::thread_rng();
+        let test: i64 = rng.gen();
+
+        let encoded = encode(test);
+        let decoded = decode::<i64>(&encoded).unwrap();
+
+        assert_eq!(test, decoded[0])
+    }
+
+    #[test]
+    fn test_encode_decode_i128() {
+        let mut rng = rand::thread_rng();
+        let test: i128 = rng.gen();
+
+        let encoded = encode(test);
+        let decoded = decode::<i128>(&encoded).unwrap();
+
+        assert_eq!(test, decoded[0])
+    }
+
+    #[test]
     fn test_encode_decode_u8_slice() {
         let mut rng = rand::thread_rng();
         let test: Vec<u8> = (0..10).map(|_| rng.gen()).collect();
@@ -138,6 +193,61 @@ mod test {
 
         let encoded = encode_slice(&test);
         let decoded = decode::<u128>(&encoded).unwrap();
+
+        assert_eq!(test, decoded)
+    }
+
+    #[test]
+    fn test_encode_decode_i8_slice() {
+        let mut rng = rand::thread_rng();
+        let test: Vec<i8> = (0..10).map(|_| rng.gen()).collect();
+
+        let encoded = encode_slice(&test);
+        let decoded = decode::<i8>(&encoded).unwrap();
+
+        assert_eq!(test, decoded)
+    }
+
+    #[test]
+    fn test_encode_decode_i16_slice() {
+        let mut rng = rand::thread_rng();
+        let test: Vec<i16> = (0..10).map(|_| rng.gen()).collect();
+
+        let encoded = encode_slice(&test);
+        let decoded = decode::<i16>(&encoded).unwrap();
+
+        assert_eq!(test, decoded)
+    }
+
+    #[test]
+    fn test_encode_decode_i32_slice() {
+        let mut rng = rand::thread_rng();
+        let test: Vec<i32> = (0..10).map(|_| rng.gen()).collect();
+
+        let encoded = encode_slice(&test);
+        let decoded = decode::<i32>(&encoded).unwrap();
+
+        assert_eq!(test, decoded)
+    }
+
+    #[test]
+    fn test_encode_decode_i64_slice() {
+        let mut rng = rand::thread_rng();
+        let test: Vec<i64> = (0..10).map(|_| rng.gen()).collect();
+
+        let encoded = encode_slice(&test);
+        let decoded = decode::<i64>(&encoded).unwrap();
+
+        assert_eq!(test, decoded)
+    }
+
+    #[test]
+    fn test_encode_decode_i128_slice() {
+        let mut rng = rand::thread_rng();
+        let test: Vec<i128> = (0..10).map(|_| rng.gen()).collect();
+
+        let encoded = encode_slice(&test);
+        let decoded = decode::<i128>(&encoded).unwrap();
 
         assert_eq!(test, decoded)
     }
